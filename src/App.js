@@ -138,7 +138,9 @@ function Display({ value }) {
   );
 };
 
-
+function parse(str) {
+  return Function(`'use strict'; return (${str})`)()
+}
 
 function Panel() {
   const [displayValue, setDisplayValue] = useState('');
@@ -160,6 +162,7 @@ function Panel() {
       setDisplayValue('');
     } else if (value === '=') {
       try {
+        setDisplayValue(parse(displayValue).toString());
         setCalulated(true);
       } catch (error) {
         setDisplayValue('Error');
