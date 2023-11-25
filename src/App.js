@@ -173,7 +173,7 @@ function Panel() {
 
   const calculation = (expression) => {
     const tokens = expression.match(/\d+|[+*/-]/g);
-    if (!tokens) return 0; // Return 0 for empty or invalid input
+    if (!tokens) return 0;
 
     const operators = {
       '+': (a, b) => a + b,
