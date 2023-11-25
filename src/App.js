@@ -138,9 +138,6 @@ function Display({ value }) {
   );
 };
 
-function parse(str) {
-  return Function(`'use strict'; return (${str})`)()
-}
 
 function Panel() {
   const [displayValue, setDisplayValue] = useState('');
@@ -162,13 +159,26 @@ function Panel() {
       setDisplayValue('');
     } else if (value === '=') {
       try {
-        setDisplayValue(parse(displayValue).toString());
+        setDisplayValue(eval(displayValue).toString());
         setCalulated(true);
       } catch (error) {
         setDisplayValue('Error');
       }
     }
   };
+
+  // function add(a, b) {
+  //   return a + b;
+  // }
+  // function minus(a, b) {
+  //   return a - b;
+  // }
+  // function multiply(a, b) {
+  //   return a * b;
+  // }
+  // function divide(a, b) {
+  //   return a / b;
+  // }
 
   return (
     <div className="calculator">
