@@ -140,67 +140,62 @@ function Display({ value }) {
 
 function Panel() {
   const [displayValue, setDisplayValue] = useState('');
-  const [calculated, setCalulated] = useState(false);
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
-  const [operator, setOperator] = useState("");
+  const [calculated, setCalculated] = useState(false);
 
   const handleClick = (value) => {
-    setDisplayValue(displayValue + value);
-    //const lastValue = displayValue[displayValue.length - 1];
-
     if (calculated) {
-      setDisplayValue(value);
-      setCalulated(false);
-    }
-    if ('+-*/'.includes(displayValue.charAt(0))) {
-      setDisplayValue(value);
-    }
-
-    if ('+-*/'.includes(value) && value1 === 0) {
-      setValue1(displayValue);
-      setOperator(value);
       setDisplayValue("");
+      setCalculated(false);
+    } else if ('+-*/'.includes(displayValue.charAt(0))) {
+      setDisplayValue(value);
+    } else if (value === '=') {
+      calculate();
+    } else if (value === 'C') {
+      clear();
+    } else {
+      setDisplayValue(displayValue + value);
     }
-
-    if (value === '=' && value2 === 0) {
-      setValue2(displayValue);
-      setDisplayValue("");
-    }
-
-    if ('+-*/'.includes(value) && value1 !== 0) {
-      setDisplayValue(displayValue + value.slice(0, ""));
-    }
-
-    if (value === '=' && value1 !== 0 && value2 !== 0) {
-      setCalulated(true);
-      if (operator === '+') {
-        setDisplayValue(add(value1, value2).toString());
-      } else if (operator === '-') {
-        setDisplayValue(minus(value1, value2).toString());
-      } else if (operator === '*') {
-        setDisplayValue(multiply(value1, value2).toString());
-      } else if (operator === '/') {
-        setDisplayValue(divide(value1, value2).toString());
-      }
-      setValue1(0);
-      setValue2(0);
-    }
-
   };
 
-  function add(a, b) {
-    return parseFloat(a) + parseFloat(b);
-  }
-  function minus(a, b) {
-    return a - b;
-  }
-  function multiply(a, b) {
-    return a * b;
-  }
-  function divide(a, b) {
-    return a / b;
-  }
+  const calculate = () => {
+    try {
+      const result = calculation(displayValue);
+      setDisplayValue(result.toString());
+      setCalculated(true);
+    } catch (error) {
+      setDisplayValue('Error');
+    }
+  };
+
+  const clear = () => {
+    setDisplayValue('');
+  };
+
+  const calculation = (expression) => {
+    const tokens = expression.match(/\d+|[+*/-]/g);
+    if (!tokens) return 0; // Return 0 for empty or invalid input
+
+    const operators = {
+      '+': (a, b) => a + b,
+      '-': (a, b) => a - b,
+      '*': (a, b) => a * b,
+      '/': (a, b) => a / b,
+    };
+
+    let currentOperator = '+';
+    let result = 0;
+
+    tokens.forEach((token) => {
+      if (['+', '-', '*', '/'].includes(token)) {
+        currentOperator = token;
+      } else {
+        const number = parseFloat(token);
+        result = operators[currentOperator](result, number);
+      }
+    });
+
+    return result;
+  };
 
   return (
     <div className="calculator">
