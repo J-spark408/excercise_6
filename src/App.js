@@ -138,14 +138,16 @@ function Display({ value }) {
   );
 };
 
-
 function Panel() {
   const [displayValue, setDisplayValue] = useState('');
   const [calculated, setCalulated] = useState(false);
+  const [value1, setValue1] = useState(0);
+  const [value2, setValue2] = useState(0);
+  const [operator, setOperator] = useState("");
 
   const handleClick = (value) => {
     setDisplayValue(displayValue + value);
-    const lastValue = displayValue[displayValue.length - 1];
+    //const lastValue = displayValue[displayValue.length - 1];
 
     if (calculated) {
       setDisplayValue(value);
@@ -153,32 +155,52 @@ function Panel() {
     }
     if ('+-*/'.includes(displayValue.charAt(0))) {
       setDisplayValue(value);
-    } else if ('+-*/'.includes(lastValue) && '+-*/'.includes(value)) {
-      setDisplayValue(displayValue.slice(0, -1) + value);
-    } else if (value === 'C') {
-      setDisplayValue('');
-    } else if (value === '=') {
-      try {
-        setDisplayValue(eval(displayValue).toString());
-        setCalulated(true);
-      } catch (error) {
-        setDisplayValue('Error');
-      }
     }
+
+    if ('+-*/'.includes(value) && value1 === 0) {
+      setValue1(displayValue);
+      setOperator(value);
+      setDisplayValue("");
+    }
+
+    if (value === '=' && value2 === 0) {
+      setValue2(displayValue);
+      setDisplayValue("");
+    }
+
+    if ('+-*/'.includes(value) && value1 !== 0) {
+      setDisplayValue(displayValue + value.slice(0, ""));
+    }
+
+    if (value === '=' && value1 !== 0 && value2 !== 0) {
+      setCalulated(true);
+      if (operator === '+') {
+        setDisplayValue(add(value1, value2).toString());
+      } else if (operator === '-') {
+        setDisplayValue(minus(value1, value2).toString());
+      } else if (operator === '*') {
+        setDisplayValue(multiply(value1, value2).toString());
+      } else if (operator === '/') {
+        setDisplayValue(divide(value1, value2).toString());
+      }
+      setValue1(0);
+      setValue2(0);
+    }
+
   };
 
-  // function add(a, b) {
-  //   return a + b;
-  // }
-  // function minus(a, b) {
-  //   return a - b;
-  // }
-  // function multiply(a, b) {
-  //   return a * b;
-  // }
-  // function divide(a, b) {
-  //   return a / b;
-  // }
+  function add(a, b) {
+    return parseFloat(a) + parseFloat(b);
+  }
+  function minus(a, b) {
+    return a - b;
+  }
+  function multiply(a, b) {
+    return a * b;
+  }
+  function divide(a, b) {
+    return a / b;
+  }
 
   return (
     <div className="calculator">
