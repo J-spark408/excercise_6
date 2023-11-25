@@ -141,13 +141,16 @@ function Display({ value }) {
 function Panel() {
   const [displayValue, setDisplayValue] = useState('');
   const [calculated, setCalculated] = useState(false);
-
   const handleClick = (value) => {
+    const lastChar = displayValue[displayValue.length - 1];
+    console.log(lastChar);
     if (calculated) {
       setDisplayValue("");
       setCalculated(false);
     } else if ('+-*/'.includes(displayValue.charAt(0))) {
       setDisplayValue(value);
+    } else if ('+-*/'.includes(lastChar) && '+-*/'.includes(value)) {
+      setDisplayValue(displayValue.slice(0, -1) + value);
     } else if (value === '=') {
       calculate();
     } else if (value === 'C') {
@@ -176,17 +179,17 @@ function Panel() {
     if (!tokens) return 0;
 
     const operators = {
+      '/': (a, b) => a / b,
+      '*': (a, b) => a * b,
       '+': (a, b) => a + b,
       '-': (a, b) => a - b,
-      '*': (a, b) => a * b,
-      '/': (a, b) => a / b,
     };
 
     let currentOperator = '+';
     let result = 0;
 
     tokens.forEach((token) => {
-      if (['+', '-', '*', '/'].includes(token)) {
+      if (['/', '*', '+', '-'].includes(token)) {
         currentOperator = token;
       } else {
         const number = parseFloat(token);
